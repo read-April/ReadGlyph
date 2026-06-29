@@ -1,0 +1,55 @@
+<UserControl x:Class="ReadGlyph.Views.Dialogs.EditGlyphsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Width="500" Height="320"
+             d:DesignHeight="320" d:DesignWidth="500">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Controls.xaml" />
+                <ResourceDictionary Source="/Themes/Light.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border Background="{DynamicResource SecondaryBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1" Padding="24" >
+        <StackPanel>
+            <TextBlock Text="编辑字形字符集" FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Margin="0,0,0,12" />
+
+            <!-- ASCII 开关 -->
+            <CheckBox x:Name="ChkIncludeAscii" IsChecked="True" Margin="0,0,0,6"
+                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="12">
+                <TextBlock>
+                    包含 ASCII 可打印字符
+                    <Run Foreground="{StaticResource TextMutedBrush}" FontSize="11"
+                         Text="（空格、数字、大小写字母、常用符号等 95 个字符）" />
+                </TextBlock>
+            </CheckBox>
+
+            <!-- 自定义额外字符 -->
+            <TextBlock Text="自定义额外字符" Style="{StaticResource LabelStyle}" Margin="0,8,0,0" />
+            <TextBox x:Name="TxtGlyphs"
+                     Height="120" TextWrapping="Wrap" AcceptsReturn="True"
+                     FontSize="16"
+                     FontFamily="Microsoft YaHei, SimSun, Segoe UI, sans-serif"
+                     VerticalScrollBarVisibility="Auto"
+                     Margin="0,0,0,4" />
+            <TextBlock Text="直接输入需要的字符，如中文、日文、特殊符号等" FontSize="11"
+                       Foreground="{StaticResource TextMutedBrush}"
+                       Margin="0,0,0,16" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="取消" Style="{StaticResource {x:Type Button}}"
+                        Width="80" Margin="0,0,10,0" />
+                <Button x:Name="BtnConfirm" Content="确定并重新生成"
+                        Style="{StaticResource PrimaryButton}" Width="140" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

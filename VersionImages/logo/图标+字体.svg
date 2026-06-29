@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 240" width="100%" height="100%">
+  <!-- 深色背景（便于更好地衬托浅色文字） -->
+  <rect width="100%" height="100%" fill="#14181f" rx="16" />
+
+  <!-- 左侧：像素 G 图标（整体放大） -->
+  <g transform="translate(50, 40)">
+    <!-- 芯片主体 -->
+    <rect x="0" y="0" width="160" height="160" rx="12" fill="none" stroke="#d4853a" stroke-width="6" />
+    <!-- 像素 G -->
+    <rect x="40" y="40" width="24" height="24" rx="4" fill="#d4853a" />
+    <rect x="68" y="40" width="24" height="24" rx="4" fill="#d4853a" />
+    <rect x="96" y="40" width="24" height="24" rx="4" fill="#d4853a" />
+    <rect x="40" y="68" width="24" height="24" rx="4" fill="#d4853a" />
+    <rect x="96" y="68" width="24" height="24" rx="4" fill="#d4853a" />
+    <rect x="40" y="96" width="24" height="24" rx="4" fill="#d4853a" />
+    <rect x="68" y="96" width="24" height="24" rx="4" fill="#d4853a" />
+  </g>
+
+  <!-- 右侧：品牌文字标识（整体放大） -->
+  <g transform="translate(260, 135)">
+    <!-- 主品牌名称 -->
+    <text x="0" y="0" font-family="'Inter', sans-serif" font-size="96" font-weight="900" fill="#eaeef3" letter-spacing="-1">
+      <tspan fill="#d4853a">R</tspan>ead<tspan fill="#d4853a">G</tspan>lyph
+    </text>
+    <!-- 描述语（字号加大，与图标底部对齐） -->
+    <text x="0" y="65" font-family="'Inter', sans-serif" font-size="40" font-weight="400" fill="#a0aebb" letter-spacing="1">
+      字体 · 图片 · 资产工坊
+    </text>
+  </g>
+</svg>

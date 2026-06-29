@@ -1,0 +1,16 @@
+# Visual Studio
+.vs/
+
+# 构建输出
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# NuGet
+*.nupkg
+**/packages/*
+
+# 用户数据（测试用的字体/图片不要上传）
+Data/

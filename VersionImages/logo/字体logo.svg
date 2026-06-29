@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="70 10 260 100" width="100%" height="100%">
+  <!-- 主品牌名称 -->
+  <text x="80" y="52" font-family="'Inter', sans-serif" font-size="40" font-weight="900" fill="#eaeef3" letter-spacing="-0.5" text-anchor="start">
+    <tspan fill="#d4853a">R</tspan>ead<tspan fill="#d4853a">G</tspan>lyph
+  </text>
+  <!-- 描述语 -->
+  <text x="80" y="82" font-family="'Inter', sans-serif" font-size="14" font-weight="400" fill="#a0aebb" letter-spacing="0.5" text-anchor="start">
+    字体 · 图片 · 资产工坊
+  </text>
+</svg>
