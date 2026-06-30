@@ -7,6 +7,30 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <Version>1.0.0</Version>
+
+    <!-- 设置生成的 exe 文件图标 -->
+    <ApplicationIcon>Resources\fac.ico</ApplicationIcon>
+    
+    <!-- 发布为单个 exe -->
+    <PublishSingleFile>true</PublishSingleFile>
+
+    <!-- 不打包 .NET 运行时，要求目标电脑已安装对应运行时 -->
+    <SelfContained>false</SelfContained>
+
+    <!-- 单文件发布通常需要指定运行时标识 -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+
+    <!-- 将本机库包含进单文件，运行时会自解压 -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+
+    <!-- 尝试将内容文件也包含进单文件，运行时会自解压 -->
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+
+    <!-- 不生成调试符号文件，减少发布目录中的额外文件 -->
+    <DebugType>none</DebugType>
+
+    <!-- 禁用调试符号输出，避免生成 .pdb 文件 -->
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
