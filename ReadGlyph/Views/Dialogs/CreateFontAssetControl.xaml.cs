@@ -13,28 +13,37 @@ public partial class CreateFontAssetControl : UserControl
     public CreateFontAssetControl()
     {
         InitializeComponent();
+        // 点击「生成字体」：先校验，非法文件名直接拦截
+        BtnGenerate.Click += OnGenerateClick;
         Loaded += (_, _) =>
         {
-            BtnGenerate.Click += (_, _) =>
-            {
-                if (SelectedSourceId == null)
-                {
-                    AlertDialog.Show("提示", "请选择字体源");
-                    CmbFontSource.Focus();
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(OutputName))
-                {
-                    AlertDialog.Show("提示", "请输入输出文件名");
-                    TxtOutputName.Focus();
-                    return;
-                }
-                Confirmed?.Invoke();
-            };
             // 勾选状态变化时更新提示
             ChkIncludeAscii.Checked += (_, _) => UpdateHint();
             ChkIncludeAscii.Unchecked += (_, _) => UpdateHint();
         };
+    }
+
+    private void OnGenerateClick(object sender, RoutedEventArgs e)
+    {
+        if (SelectedSourceId == null)
+        {
+            AlertDialog.Show("提示", "请选择字体源");
+            CmbFontSource.Focus();
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(OutputName))
+        {
+            AlertDialog.Show("提示", "请输入输出文件名");
+            TxtOutputName.Focus();
+            return;
+        }
+        if (!IsValidIdentifier(OutputName))
+        {
+            AlertDialog.Show("提示", "输出文件名只能包含字母、数字和下划线，请修改后重试");
+            TxtOutputName.Focus();
+            return;
+        }
+        Confirmed?.Invoke();
     }
 
     /// <summary>用户点击「生成字体」时触发</summary>
@@ -84,4 +93,20 @@ public partial class CreateFontAssetControl : UserControl
             QuickImportFont?.Invoke(dlg.FileName);
         }
     }
+
+    /// <summary>判断输出文件名是否为合法 C 标识符（仅 ASCII 字母、数字、下划线，且以字母或下划线开头；中文等 Unicode 字母不合法）</summary>
+    private static bool IsValidIdentifier(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return false;
+        if (!IsAsciiLetter(name[0]) && name[0] != '_') return false;
+        foreach (char c in name)
+            if (!IsAsciiIdentChar(c)) return false;
+        return true;
+    }
+
+    private static bool IsAsciiIdentChar(char c) =>
+        IsAsciiLetter(c) || (c >= '0' && c <= '9') || c == '_';
+
+    private static bool IsAsciiLetter(char c) =>
+        (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }

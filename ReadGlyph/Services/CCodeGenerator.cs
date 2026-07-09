@@ -119,12 +119,36 @@ public class CCodeGenerator
 
     // ═════════════ 格式写入器 ═════════════
 
+    /// <summary>
+    /// 将任意字符串洗成合法的 C 标识符：仅保留 [A-Za-z0-9_]，其余替换为 '_'；
+    /// 若首字符不是字母/下划线则加前缀（如 "img_" / "font_"），确保生成的
+    /// 变量名可被 C 编译器接受（避免中文等非法字符导致编译报错）。
+    /// </summary>
+    private static string SanitizeIdentifier(string name, string prefix)
+    {
+        if (string.IsNullOrEmpty(name)) name = prefix;
+        var sb = new StringBuilder(name.Length);
+        foreach (char c in name)
+            sb.Append(IsAsciiIdentChar(c) ? c : '_');
+        var s = sb.ToString();
+        if (s.Length == 0 || !IsAsciiLetter(s[0]) && s[0] != '_')
+            s = prefix + s;
+        return s;
+    }
+
+    /// <summary>仅 ASCII 字母/数字/下划线才算合法 C 标识符字符（中文等 Unicode 字母不算）</summary>
+    private static bool IsAsciiIdentChar(char c) =>
+        IsAsciiLetter(c) || (c >= '0' && c <= '9') || c == '_';
+
+    private static bool IsAsciiLetter(char c) =>
+        (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+
     private static void WriteFontLvgl9(StringBuilder sb, string name, FontAsset asset,
         List<FontEngine.GlyphData> glyphs, List<byte[]> bmpList, int bmpIdx,
         List<(uint cp, int ofs, int adv, int w, int h, int ox, int oy)> sorted)
     {
         // 确保变量名是合法 C 标识符（不能以数字开头）
-        var safeName = !char.IsLetter(name[0]) && name[0] != '_' ? "font_" + name : name;
+        var safeName = SanitizeIdentifier(name, "font_");
 
         // ── 度量计算（提前，用于 ofs_y 转换）──
         int baseLine = glyphs.Count > 0 ? glyphs.Max(g => g.OffsetY) : asset.Size;
@@ -236,7 +260,7 @@ public class CCodeGenerator
     private static void WriteImageLvgl9(StringBuilder sb, string name, ImageAsset asset, ImageEngine.PixelResult result)
     {
         // 确保变量名是合法 C 标识符（不能以数字开头）
-        var safeName = !char.IsLetter(name[0]) && name[0] != '_' ? "img_" + name : name;
+        var safeName = SanitizeIdentifier(name, "img_");
 
         string cfConst = asset.Format switch
         {
