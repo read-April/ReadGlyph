@@ -244,6 +244,9 @@ public class CCodeGenerator
             "RGB888" => "LV_COLOR_FORMAT_RGB888",
             "ARGB8888" => "LV_COLOR_FORMAT_ARGB8888",
             "I1" => "LV_COLOR_FORMAT_I1",
+            "I2" => "LV_COLOR_FORMAT_I2",
+            "I4" => "LV_COLOR_FORMAT_I4",
+            "I8" => "LV_COLOR_FORMAT_I8",
             _ => "LV_COLOR_FORMAT_RGB888"
         };
         int stride = asset.Format switch
@@ -252,6 +255,9 @@ public class CCodeGenerator
             "RGB888" => result.Width * 3,
             "ARGB8888" => result.Width * 4,
             "I1" => (result.Width + 7) / 8,
+            "I2" => (result.Width * 2 + 7) / 8,
+            "I4" => (result.Width * 4 + 7) / 8,
+            "I8" => result.Width,
             _ => result.Width * result.BytesPerPixel
         };
 
@@ -262,10 +268,21 @@ public class CCodeGenerator
         sb.AppendLine("#endif");
         sb.AppendLine();
 
-        sb.AppendLine($"static LV_ATTRIBUTE_LARGE_CONST const uint8_t __{safeName}_data[{result.Data.Length}] = {{");
-        for (int i = 0; i < result.Data.Length; i++)
+        // 索引色格式（I1/I2/I4/I8）：LVGL v9 要求调色板放在 data 数组最开头，
+        // 紧随其后是像素索引数据。非索引格式调色板为空，直接输出像素数据。
+        var emitData = result.Palette.Length > 0
+            ? result.Palette.Concat(result.Data).ToArray()
+            : result.Data;
+
+        if (result.Palette.Length > 0)
+            sb.AppendLine($"/* 调色板（{result.Palette.Length / 4} 色，B,G,R,A）× 像素索引数据 */");
+        else
+            sb.AppendLine($"/* 像素数据 */");
+
+        sb.AppendLine($"static LV_ATTRIBUTE_LARGE_CONST const uint8_t __{safeName}_data[{emitData.Length}] = {{");
+        for (int i = 0; i < emitData.Length; i++)
         {
-            sb.Append($"0x{result.Data[i]:X2}, ");
+            sb.Append($"0x{emitData[i]:X2}, ");
             if ((i + 1) % 16 == 0) sb.AppendLine();
         }
         sb.AppendLine();

@@ -47,11 +47,14 @@ public partial class CreateImageAssetControl : UserControl
     /// <summary>颜色格式</summary>
     public string Format => CmbFormat.SelectedIndex switch
     {
-        0 => "RGB565",
-        1 => "RGB888",
-        2 => "ARGB8888",
-        3 => "I1",
-        _ => "RGB888"
+            0 => "RGB565",
+            1 => "RGB888",
+            2 => "ARGB8888",
+            3 => "I1",
+            4 => "I2",
+            5 => "I4",
+            6 => "I8",
+            _ => "RGB888"
     };
 
     /// <summary>输出 .c 文件名</summary>

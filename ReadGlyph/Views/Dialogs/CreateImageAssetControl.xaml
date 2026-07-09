@@ -50,11 +50,14 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="颜色格式" Style="{StaticResource LabelStyle}" />
-                    <ComboBox x:Name="CmbFormat" SelectedIndex="1">
+                    <ComboBox x:Name="CmbFormat" SelectedIndex="0">
                         <ComboBoxItem Content="RGB565（16位，无透明）" />
                         <ComboBoxItem Content="RGB888（24位）" />
                         <ComboBoxItem Content="ARGB8888（32位）" />
                         <ComboBoxItem Content="I1（1位单色）" />
+                        <ComboBoxItem Content="I2（2位索引，4色）" />
+                        <ComboBoxItem Content="I4（4位索引，16色）" />
+                        <ComboBoxItem Content="I8（8位索引，256色）" />
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Grid.Column="2">

@@ -1,5 +1,6 @@
 # Visual Studio
 .vs/
+.codebuddy/
 
 # 构建输出
 bin/
