@@ -55,8 +55,14 @@ public class FontEngine
                 }
 
                 // FreeType 渲染输出 8bpp 灰度，转换为目标 bpp
+                // 注意：bitmap.Pitch（每行字节数，含对齐填充）可能大于 bitmap.Width（每行像素数）
+                // 必须逐行拷贝，否则 Pitch > Width 时数据会错位导致字形歪斜
                 var grayData = new byte[bitmap.Width * bitmap.Rows];
-                Marshal.Copy(bitmap.Buffer, grayData, 0, grayData.Length);
+                var pitch = bitmap.Pitch;
+                for (int row = 0; row < bitmap.Rows; row++)
+                {
+                    Marshal.Copy(bitmap.Buffer + row * pitch, grayData, row * bitmap.Width, bitmap.Width);
+                }
 
                 var packed = PackGlyph(grayData, bitmap.Width, bitmap.Rows, bpp);
 

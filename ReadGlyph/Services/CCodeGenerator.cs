@@ -150,9 +150,18 @@ public class CCodeGenerator
         // 确保变量名是合法 C 标识符（不能以数字开头）
         var safeName = SanitizeIdentifier(name, "font_");
 
-        // ── 度量计算（提前，用于 ofs_y 转换）──
-        int baseLine = glyphs.Count > 0 ? glyphs.Max(g => g.OffsetY) : asset.Size;
-        int lineHeight = glyphs.Count > 0 ? glyphs.Max(g => g.OffsetY + g.Height) : asset.Size * 4 / 3;
+        // ── 度量计算（对齐 LVGL lv_draw_label.c 渲染公式与 lv_font_conv 算法）──
+        // LVGL 渲染公式：y1 = pos.y + (line_height - base_line) - box_h - ofs_y
+        // 与 FreeType 对齐：ofs_y = BitmapTop - box_h（字形底部相对基线的偏移）
+        // ascent  = max(BitmapTop)          — 基线到最高字形顶部的距离
+        // descent = min(BitmapTop - Height)  — 基线到最低字形底部的距离（负值或零）
+        // base_line = -descent               — 行底部到基线的距离（LVGL 从行底部测量）
+        // line_height = ascent - descent     — 整行高度
+        // 注意：descent 必须 <= 0，否则纯上升字符（数字/大写）会导致 line_height < ascent 而截断
+        int ascent  = glyphs.Count > 0 ? glyphs.Max(g => g.OffsetY) : asset.Size;
+        int descent = glyphs.Count > 0 ? Math.Min(0, glyphs.Min(g => g.OffsetY - g.Height)) : 0;
+        int baseLine = -descent;
+        int lineHeight = ascent - descent;
         if (lineHeight < baseLine + 2) lineHeight = baseLine + 2;
         int underlinePos = -(asset.Size / 16 + 1);
         int underlineThick = Math.Max(1, asset.Size / 16);
@@ -185,14 +194,15 @@ public class CCodeGenerator
         sb.AppendLine();
 
         // 描述符（index 0 为占位符，glyph_id 从 1 开始）
-        // LVGL ofs_y = baseline - FreeType offsetY（从行顶部到字形顶部的距离）
+        // LVGL 渲染公式：y1 = (line_height - base_line) - box_h - ofs_y，故 ofs_y = BitmapTop - box_h
         sb.AppendLine("/* glyph descriptors */");
         sb.AppendLine($"static const lv_font_fmt_txt_glyph_dsc_t __{safeName}_dsc[{sorted.Count + 1}] = {{");
         sb.AppendLine("    {.bitmap_index = 0, .adv_w = 0, .box_w = 0, .box_h = 0, .ofs_x = 0, .ofs_y = 0}, /* placeholder */");
         foreach (var (cp, ofs, adv, w, h, ox, oy) in sorted)
         {
-            // 转换 ofs_y：LVGL 使用行顶部坐标系，FreeType 使用基线坐标系
-            int lvglOfsY = baseLine - oy;
+            // 转换 ofs_y：LVGL 渲染公式 y1 = (line_height - base_line) - box_h - ofs_y
+            // 与 FreeType 对齐：ofs_y = BitmapTop - box_h（字形底部相对基线的偏移，下沉为负）
+            int lvglOfsY = oy - h;
             // 转换 adv_w：LVGL 使用 8.4 定点格式（实际像素值 × 16）
             int lvglAdvW = adv * 16;
             // 获取实际字符（支持 Unicode）
