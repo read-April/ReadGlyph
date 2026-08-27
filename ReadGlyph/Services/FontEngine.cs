@@ -1,3 +1,4 @@
+using System.IO;
 using SharpFont;
 using System.Runtime.InteropServices;
 
@@ -70,6 +71,15 @@ public class FontEngine
                     PackedBitmap  = packed,
                 });
             }
+        }
+        catch (Exception ex) when (ex.Message.Contains("Broken table", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"FreeType 无法解析字体文件中的某些表（Broken table）。\n" +
+                $"文件：{Path.GetFileName(fontFilePath)}\n\n" +
+                $"常见原因：该字体为可变字体（Variable Font / VF），当前 FreeType 版本不支持其变体表。\n" +
+                $"解决方法：请使用字体工具（如 FontForge、fonttools）将可变字体导出为静态字体（Static Font）后再导入。",
+                ex);
         }
         finally
         {

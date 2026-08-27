@@ -204,10 +204,10 @@ public partial class MainViewModel : ObservableObject
     public ObservableCollection<FontAsset> FontAssets { get; } = [];
     public ObservableCollection<ImageAsset> ImageAssets { get; } = [];
 
-    /// <summary>创建字体资产</summary>
-    public void CreateFontAsset(string sourceId, string name, int size, int bpp, string? glyphs = null, string? outputDir = null, string exportFormat = "LVGL9")
+    /// <summary>创建字体资产，返回创建的对象供调用方使用</summary>
+    public FontAsset? CreateFontAsset(string sourceId, string name, int size, int bpp, string? glyphs = null, string? outputDir = null, string exportFormat = "LVGL9")
     {
-        if (string.IsNullOrEmpty(SelectedProject)) return;
+        if (string.IsNullOrEmpty(SelectedProject)) return null;
 
         var fa = new FontAsset
         {
@@ -223,12 +223,13 @@ public partial class MainViewModel : ObservableObject
         FontAssets.Add(fa);
         SaveCurrentProject();
         StatusText = $"已创建字体资产「{name}」";
+        return fa;
     }
 
-    /// <summary>创建图片资产</summary>
-    public void CreateImageAsset(string sourceId, string name, int width, int height, string format, string? outputDir = null, string exportFormat = "LVGL9")
+    /// <summary>创建图片资产，返回创建的对象供调用方使用</summary>
+    public ImageAsset? CreateImageAsset(string sourceId, string name, int width, int height, string format, string? outputDir = null, string exportFormat = "LVGL9")
     {
-        if (string.IsNullOrEmpty(SelectedProject)) return;
+        if (string.IsNullOrEmpty(SelectedProject)) return null;
 
         var ia = new ImageAsset
         {
@@ -244,6 +245,7 @@ public partial class MainViewModel : ObservableObject
         ImageAssets.Add(ia);
         SaveCurrentProject();
         StatusText = $"已创建图片资产「{name}」";
+        return ia;
     }
 
     /// <summary>保存当前项目的 project.rglyph.json</summary>
@@ -260,46 +262,64 @@ public partial class MainViewModel : ObservableObject
         UpdateCounts();
     }
 
-    /// <summary>生成字体资产的 .c 文件到项目 OutputPath</summary>
-    public void GenerateFontAsset(FontAsset asset)
+    /// <summary>生成字体资产的 .c 文件到项目 OutputPath，成功返回 null，失败返回错误信息</summary>
+    public string? GenerateFontAsset(FontAsset asset)
     {
-        if (string.IsNullOrEmpty(SelectedProjectPath)) return;
+        if (string.IsNullOrEmpty(SelectedProjectPath)) return null;
 
         var source = FontSources.FirstOrDefault(s => s.Id == asset.SourceId);
         if (source == null)
         {
             StatusText = $"错误：找不到字体源 {asset.SourceId}";
-            return;
+            return StatusText;
         }
 
-        StatusText = $"正在生成 {asset.Name} ...";
-        var dir = Path.Combine(SelectedProjectPath, asset.OutputDir);
-        Directory.CreateDirectory(dir);
-        var fileName = asset.Name.EndsWith(".c", StringComparison.OrdinalIgnoreCase) ? asset.Name : asset.Name + ".c";
-        var outputPath = Path.Combine(dir, fileName);
-        _codeGen.GenerateFont(outputPath, source, asset, _dataDir);
-        StatusText = $"已生成「{asset.Name}」→ {outputPath}";
+        try
+        {
+            StatusText = $"正在生成 {asset.Name} ...";
+            var dir = Path.Combine(SelectedProjectPath, asset.OutputDir);
+            Directory.CreateDirectory(dir);
+            var fileName = asset.Name.EndsWith(".c", StringComparison.OrdinalIgnoreCase) ? asset.Name : asset.Name + ".c";
+            var outputPath = Path.Combine(dir, fileName);
+            _codeGen.GenerateFont(outputPath, source, asset, _dataDir);
+            StatusText = $"已生成「{asset.Name}」→ {outputPath}";
+            return null;
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"生成「{asset.Name}」失败：{ex.Message}";
+            return StatusText;
+        }
     }
 
-    /// <summary>生成图片资产的 .c 文件到项目 OutputPath</summary>
-    public void GenerateImageAsset(ImageAsset asset)
+    /// <summary>生成图片资产的 .c 文件到项目 OutputPath，成功返回 null，失败返回错误信息</summary>
+    public string? GenerateImageAsset(ImageAsset asset)
     {
-        if (string.IsNullOrEmpty(SelectedProjectPath)) return;
+        if (string.IsNullOrEmpty(SelectedProjectPath)) return null;
 
         var source = ImageSources.FirstOrDefault(s => s.Id == asset.SourceId);
         if (source == null)
         {
             StatusText = $"错误：找不到图片源 {asset.SourceId}";
-            return;
+            return StatusText;
         }
 
-        StatusText = $"正在生成 {asset.Name} ...";
-        var dir = Path.Combine(SelectedProjectPath, asset.OutputDir);
-        Directory.CreateDirectory(dir);
-        var fileName = asset.Name.EndsWith(".c", StringComparison.OrdinalIgnoreCase) ? asset.Name : asset.Name + ".c";
-        var outputPath = Path.Combine(dir, fileName);
-        _codeGen.GenerateImage(outputPath, source, asset, _dataDir);
-        StatusText = $"已生成「{asset.Name}」→ {outputPath}";
+        try
+        {
+            StatusText = $"正在生成 {asset.Name} ...";
+            var dir = Path.Combine(SelectedProjectPath, asset.OutputDir);
+            Directory.CreateDirectory(dir);
+            var fileName = asset.Name.EndsWith(".c", StringComparison.OrdinalIgnoreCase) ? asset.Name : asset.Name + ".c";
+            var outputPath = Path.Combine(dir, fileName);
+            _codeGen.GenerateImage(outputPath, source, asset, _dataDir);
+            StatusText = $"已生成「{asset.Name}」→ {outputPath}";
+            return null;
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"生成「{asset.Name}」失败：{ex.Message}";
+            return StatusText;
+        }
     }
 
     /// <summary>生成当前项目所有资产</summary>

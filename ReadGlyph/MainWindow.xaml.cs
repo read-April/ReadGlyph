@@ -325,8 +325,20 @@ public partial class MainWindow : Window
                 }
                 _vm.CreateFontAsset(sourceId, dlg.OutputName, dlg.GlyphFontSize, dlg.Bpp, dlg.Glyphs, dlg.OutputDir, dlg.ExportFormat);
                 // 创建完成后立即生成 .c 文件
-                if (_vm.FontAssets.Count > 0)
-                    _vm.GenerateFontAsset(_vm.FontAssets[^1]);
+                var newAsset = _vm.FontAssets.Count > 0 ? _vm.FontAssets[^1] : null;
+                if (newAsset != null)
+                {
+                    var error = _vm.GenerateFontAsset(newAsset);
+                    if (error != null)
+                    {
+                        // 生成失败，回滚：移除刚创建的资产
+                        _vm.FontAssets.Remove(newAsset);
+                        _vm.SaveCurrentProject();
+                        CloseDialog();
+                        ShowAlert(error);
+                        return;
+                    }
+                }
             }
             CloseDialog();
         };
@@ -389,8 +401,20 @@ public partial class MainWindow : Window
                 var src = _vm.ImageSources.FirstOrDefault(s => s.Id == sourceId);
                 _vm.CreateImageAsset(sourceId, dlg.OutputName, src?.Width ?? 0, src?.Height ?? 0, dlg.Format, dlg.OutputDir, dlg.ExportFormat);
                 // 创建完成后立即生成 .c 文件
-                if (_vm.ImageAssets.Count > 0)
-                    _vm.GenerateImageAsset(_vm.ImageAssets[^1]);
+                var newAsset = _vm.ImageAssets.Count > 0 ? _vm.ImageAssets[^1] : null;
+                if (newAsset != null)
+                {
+                    var error = _vm.GenerateImageAsset(newAsset);
+                    if (error != null)
+                    {
+                        // 生成失败，回滚：移除刚创建的资产
+                        _vm.ImageAssets.Remove(newAsset);
+                        _vm.SaveCurrentProject();
+                        CloseDialog();
+                        ShowAlert(error);
+                        return;
+                    }
+                }
             }
             CloseDialog();
         };
@@ -421,7 +445,11 @@ public partial class MainWindow : Window
     private void BtnGenerateFont_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.DataContext is Models.FontAsset fa)
-            _vm.GenerateFontAsset(fa);
+        {
+            var error = _vm.GenerateFontAsset(fa);
+            if (error != null)
+                ShowAlert(error);
+        }
     }
 
     private void BtnEditGlyphs_Click(object sender, RoutedEventArgs e)
@@ -432,9 +460,20 @@ public partial class MainWindow : Window
         var dlg = new EditGlyphsControl { Glyphs = fa.Glyphs };
         dlg.Confirmed += () =>
         {
+            // 先备份原值，生成成功后才保存
+            var originalGlyphs = fa.Glyphs;
             fa.Glyphs = dlg.Glyphs;
+            var error = _vm.GenerateFontAsset(fa);
+            if (error != null)
+            {
+                // 生成失败，回滚字形修改
+                fa.Glyphs = originalGlyphs;
+                CloseDialog();
+                ShowAlert(error);
+                return;
+            }
+            // 生成成功，持久化字形修改
             _vm.SaveCurrentProject();
-            _vm.GenerateFontAsset(fa);
             CloseDialog();
         };
         ShowDialog(dlg);
@@ -463,7 +502,11 @@ public partial class MainWindow : Window
     private void BtnGenerateImage_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.DataContext is Models.ImageAsset ia)
-            _vm.GenerateImageAsset(ia);
+        {
+            var error = _vm.GenerateImageAsset(ia);
+            if (error != null)
+                ShowAlert(error);
+        }
     }
 
     private void BtnDeleteImage_Click(object sender, RoutedEventArgs e)
