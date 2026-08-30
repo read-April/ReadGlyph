@@ -1,3 +1,7 @@
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+
 namespace ReadGlyph.Views.Dialogs;
 
 /// <summary>
@@ -36,5 +40,37 @@ public partial class ConfirmDialog : System.Windows.Controls.UserControl
     {
         get => BtnConfirm.Content as string ?? "确定";
         set => BtnConfirm.Content = value;
+    }
+
+    /// <summary>以模态窗口形式显示确认对话框，返回是否点击「确定」</summary>
+    public static bool Show(string title, string message, string confirmText = "确定")
+    {
+        var dialog = new ConfirmDialog
+        {
+            Title = title,
+            Message = message,
+            ConfirmText = confirmText
+        };
+        var window = new Window
+        {
+            Content = dialog,
+            Width = 420,
+            SizeToContent = SizeToContent.Height,
+            WindowStyle = WindowStyle.None,
+            AllowsTransparency = true,
+            Background = Brushes.Transparent,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            ShowInTaskbar = false,
+            ResizeMode = ResizeMode.NoResize,
+            Owner = Application.Current.MainWindow
+        };
+        var confirmed = false;
+        dialog.Loaded += (_, _) =>
+        {
+            dialog.Confirmed += () => { confirmed = true; window.Close(); };
+            dialog.BtnCancel.Click += (_, _) => window.Close();
+        };
+        window.ShowDialog();
+        return confirmed;
     }
 }

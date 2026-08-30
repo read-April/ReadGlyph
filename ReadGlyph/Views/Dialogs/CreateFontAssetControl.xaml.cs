@@ -56,7 +56,7 @@ public partial class CreateFontAssetControl : UserControl
     public string? SelectedSourceId => CmbFontSource.SelectedValue as string;
 
     /// <summary>字号</summary>
-    public int GlyphFontSize => int.TryParse(TxtSize.Text, out var v) ? v : 16;
+    public int GlyphFontSize => int.TryParse(TxtSize.Text, out var v) ? v : 14;
 
     /// <summary>位深</summary>
     public int Bpp => CmbBpp.SelectedIndex switch { 0 => 1, 1 => 2, 2 => 4, 3 => 8, _ => 4 };

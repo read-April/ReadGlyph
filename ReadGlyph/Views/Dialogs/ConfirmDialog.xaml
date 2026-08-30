@@ -17,7 +17,7 @@
                        TextWrapping="Wrap" Margin="0,0,0,20" />
             <!-- 按钮 -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="取消" Style="{StaticResource {x:Type Button}}"
+                <Button x:Name="BtnCancel" Content="取消" Style="{StaticResource {x:Type Button}}"
                         Width="80" Margin="0,0,10,0" />
                 <Button x:Name="BtnConfirm" Content="确定"
                         Style="{StaticResource PrimaryButton}" Width="80" />

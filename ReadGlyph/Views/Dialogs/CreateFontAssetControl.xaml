@@ -50,7 +50,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="字号 (px)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtSize" Text="16" />
+                    <TextBox x:Name="TxtSize" Text="14" />
                 </StackPanel>
                 <StackPanel Grid.Column="2">
                     <TextBlock Text="位深度 (bpp)" Style="{StaticResource LabelStyle}" />
@@ -108,7 +108,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="输出文件名" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtOutputName" Text="font_16px" />
+                    <TextBox x:Name="TxtOutputName" Text="font_14px" />
                 </StackPanel>
                 <StackPanel Grid.Column="2">
                     <TextBlock Text="输出目录（相对路径）" Style="{StaticResource LabelStyle}" />

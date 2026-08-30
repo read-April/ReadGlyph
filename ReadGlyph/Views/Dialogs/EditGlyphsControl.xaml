@@ -4,8 +4,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             Width="500" Height="320"
-             d:DesignHeight="320" d:DesignWidth="500">
+             Width="500" Height="330"
+             d:DesignHeight="330" d:DesignWidth="500">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,9 +18,15 @@
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1" Padding="24" >
         <StackPanel>
-            <TextBlock Text="编辑字形字符集" FontSize="16" FontWeight="SemiBold"
-                       Foreground="{DynamicResource TextPrimaryBrush}"
-                       Margin="0,0,0,12" />
+            <!-- 标题 + 去重按钮 -->
+            <DockPanel Margin="0,0,0,12">
+                <Button x:Name="BtnDedupe" Content="去重"
+                        Style="{StaticResource {x:Type Button}}" Width="60"
+                        DockPanel.Dock="Right" />
+                <TextBlock Text="编辑字形字符集" FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           VerticalAlignment="Center" />
+            </DockPanel>
 
             <!-- ASCII 开关 -->
             <CheckBox x:Name="ChkIncludeAscii" IsChecked="True" Margin="0,0,0,6"
@@ -36,7 +42,7 @@
             <TextBlock Text="自定义额外字符" Style="{StaticResource LabelStyle}" Margin="0,8,0,0" />
             <TextBox x:Name="TxtGlyphs"
                      Height="120" TextWrapping="Wrap" AcceptsReturn="True"
-                     FontSize="16"
+                     FontSize="14"
                      FontFamily="Microsoft YaHei, SimSun, Segoe UI, sans-serif"
                      VerticalScrollBarVisibility="Auto"
                      Margin="0,0,0,4" />

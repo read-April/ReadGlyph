@@ -346,7 +346,7 @@
                                                 BorderThickness="1" Padding="8,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="140" />
+                                                    <ColumnDefinition Width="220" />
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="66" />
                                                     <ColumnDefinition Width="60" />
@@ -401,11 +401,11 @@
                                                             BorderThickness="0,0,0,1" Padding="8,5">
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="90" />
+                                                                <ColumnDefinition Width="220" />
                                                                 <ColumnDefinition Width="*" />
                                                                 <ColumnDefinition Width="66" />
                                                                 <ColumnDefinition Width="60" />
-                                                                <ColumnDefinition Width="74" />
+                                                                <ColumnDefinition Width="90" />
                                                                 <ColumnDefinition Width="140" />
                                                                 <ColumnDefinition Width="80" />
                                                             </Grid.ColumnDefinitions>

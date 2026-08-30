@@ -84,7 +84,7 @@
             <!-- 版本 -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                 <TextBlock Text="版本：" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Width="60" />
-                <TextBlock x:Name="TxtVersion" Text="v1.1.5" FontSize="12"
+                <TextBlock x:Name="TxtVersion" Text="v1.2.0" FontSize="12"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
 

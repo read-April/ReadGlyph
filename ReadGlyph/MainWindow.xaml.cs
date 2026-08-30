@@ -458,6 +458,12 @@ public partial class MainWindow : Window
         if (fa == null) return;
 
         var dlg = new EditGlyphsControl { Glyphs = fa.Glyphs };
+        // 去重确定后：立即保存字符集（不重新生成 .c，由用户后续决定）
+        dlg.DedupeApplied += () =>
+        {
+            fa.Glyphs = dlg.Glyphs;
+            _vm.SaveCurrentProject();
+        };
         dlg.Confirmed += () =>
         {
             // 先备份原值，生成成功后才保存
