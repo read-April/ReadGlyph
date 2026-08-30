@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <Version>1.1.4</Version>
+    <Version>1.1.5</Version>
 
     <!-- 设置生成的 exe 文件图标 -->
     <ApplicationIcon>Resources\fac.ico</ApplicationIcon>
@@ -43,6 +43,27 @@
     <PackageReference Include="SharpFont.Dependencies" Version="2.6.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
+
+  <!--
+    SharpFont.Dependencies 2.6.0 的 build\SharpFont.Dependencies.props 会硬编码把
+    x86（32 位）freetype6.dll 复制到 exe 根目录，与本项目 win-x64 平台冲突：
+    x64 进程加载 32 位原生库 → BadImageFormatException (0x8007000B)。
+    这里移除该 x86 项，并改用构建后 Target 无条件用 x64 版本覆盖 exe 根目录。
+  -->
+  <ItemGroup>
+    <Content Remove="$(NuGetPackageRoot)sharpfont.dependencies\2.6.0\bin\msvc10\x86\freetype6.dll" />
+    <Content Remove="$(NuGetPackageRoot)sharpfont.dependencies\2.6.0\build\..\bin\msvc10\x86\freetype6.dll" />
+    <Content Include="$(NuGetPackageRoot)sharpfont.dependencies\2.6.0\bin\msvc10\x64\freetype6.dll"
+             Link="freetype6.dll"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- 构建后用 x64 版 freetype6.dll 覆盖 exe 根目录（防止 x86 项残留或被 PreserveNewest 复写） -->
+  <Target Name="FixFreetypeArchitecture" AfterTargets="Build">
+    <Copy SourceFiles="$(OutDir)lib\x64\freetype6.dll"
+          DestinationFiles="$(OutDir)freetype6.dll"
+          SkipUnchangedFiles="false" />
+  </Target>
 
   <ItemGroup>
     <Folder Include="Converters\" />
